@@ -29,10 +29,19 @@ namespace Vereyon.Windows
         private const string JavaScriptDefaultFuncName = "scriptingBridge";
 
         /// <summary>
-        /// Gets / sets the settings used for json serialization.
+        /// Gets / sets the settings used for internal json serialization.
         /// </summary>
-        protected JsonSerializerSettings JsonSettings { get; set; }
+        protected JsonSerializerSettings InternalJsonSettings { get; set; }
 
+        /// <summary>
+        /// Gets / sets the settings used for parameter and return value serialization / deserialization.
+        /// </summary>
+        [ComVisible(false)]
+        public JsonSerializerSettings JsonSerializerSettings { get; set; }
+
+        /// <summary>
+        /// Gets the WebBrowser control this scripting bridge is bound to.
+        /// </summary>
         [ComVisible(false)]
         public WebBrowser WebBrowser { get; private set; }
 
@@ -59,7 +68,9 @@ namespace Vereyon.Windows
         [ComVisible(false)]
         public bool Initialized { get; private set; }
 
-
+        /// <summary>
+        /// Gets the WebBrowser document mode (also known as the IE version).
+        /// </summary>
         [ComVisible(false)]
         public string DocumentMode { get; private set; }
 
@@ -71,7 +82,7 @@ namespace Vereyon.Windows
         public ScriptingBridge(WebBrowser webBrowser, bool autoInitialize)
         {
 
-            JsonSettings = new JsonSerializerSettings
+            InternalJsonSettings = new JsonSerializerSettings
             {
                 ContractResolver = new CamelCasePropertyNamesContractResolver()
             };
@@ -88,7 +99,6 @@ namespace Vereyon.Windows
 
             // Attempt to automatically initialize the scripting bridge.
             Initialize();
-            
         }
 
         protected virtual string GetScriptingBridgeSource()
@@ -153,6 +163,7 @@ namespace Vereyon.Windows
         /// prior in order to transfer them to the browser environment. Objects can thus be passed and need not be marked as COM visible.
         /// Conversely, member functions of passed objects are unavailable in the hosted browser.
         /// </summary>
+        /// <typeparam name="T">Expected return type.</typeparam>
         /// <param name="functionName">Name of function to call. In the format of object.property.memberFunction(). The call context will by default equal object.property part.</param>
         /// <param name="args">Variable list of arguments to pass to the function.</param>
         /// <returns></returns>
@@ -162,7 +173,7 @@ namespace Vereyon.Windows
 
             // Serialize function parameters as JSON bacause we aren't able to pass objects
             // to the browser using InvokeScript.
-            var json = JsonConvert.SerializeObject(args, Formatting.Indented);
+            var json = JsonConvert.SerializeObject(args, JsonSerializerSettings);
 
             // Build parameter array.
             var parameters = new List<object>();
@@ -174,10 +185,14 @@ namespace Vereyon.Windows
             RequireInitialized();
             var resultJson = WebBrowser.Document.InvokeScript(ClientCallGate, parameters.ToArray());
 
+            // It is valid to return a null.
+            if (resultJson == null)
+                return default(T);
+
             if (!(resultJson is string))
                 throw new Exception("Invalid result.");
 
-            var result = JsonConvert.DeserializeObject<T>((string)resultJson);
+            var result = JsonConvert.DeserializeObject<T>((string)resultJson, JsonSerializerSettings);
             
             return result;
         }
@@ -187,11 +202,12 @@ namespace Vereyon.Windows
         /// </summary>
         /// <param name="methodName"></param>
         /// <returns></returns>
+        [ComVisible(true)]
         public bool RegisterClient(string args)
         {
 
             // Deserialize the configuration.
-            var configuration = JsonConvert.DeserializeObject<ScriptingBridgeRegistrationConfiguration>(args, JsonSettings);
+            var configuration = JsonConvert.DeserializeObject<ScriptingBridgeRegistrationConfiguration>(args, InternalJsonSettings);
 
             ClientCallGate = configuration.CallGateName;
             DocumentMode = DocumentMode;

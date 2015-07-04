@@ -10,26 +10,43 @@ namespace Vereyon.Windows
 {
 
     /// <summary>
-    /// 
+    /// Wrapper class for AutoResetEvent to allow waiting for events while still processing Windows messages.
     /// </summary>
     /// <typeparam name="TEventArgs"></typeparam>
-    public class WaitForFormsEvent<TEventArgs>
+    public class WaitForFormsEvent
     {
 
-        private AutoResetEvent _autoResetEvent = new AutoResetEvent(false);
-        private EventInfo _event = null;
-        private object _eventContainer = null;
-        private Action<object, TEventArgs> _eventHandler = null;
+        private AutoResetEvent AutoResetEvent;
+        private EventInfo ListenEvent;
+        private object EventContainer;
+        private Delegate ListenEventHandler;
 
         public WaitForFormsEvent()
         {
+
+            AutoResetEvent = new AutoResetEvent(false);
+            ListenEvent = null;
+            EventContainer = null;
+            ListenEventHandler = null;
         }
 
-        public WaitForFormsEvent(object eventContainer, string eventName)
+        public void ListenForEvent<TEventArgs>(object eventContainer, string eventName)
         {
-            _eventContainer = eventContainer;
-            _event = eventContainer.GetType().GetEvent(eventName);
-            _eventHandler = ((sender, args) => { _autoResetEvent.Set(); });
+
+            EventContainer = eventContainer;
+            ListenEvent = eventContainer.GetType().GetEvent(eventName);
+            ListenEventHandler = new Action<object, TEventArgs>((sender, args) => { AutoResetEvent.Set(); });
+
+            // Install the event handler.
+            ListenEvent.AddEventHandler(EventContainer, ListenEventHandler);
+        }
+
+        /// <summary>
+        /// Manually sets the event. Use this in a custom event handler function.
+        /// </summary>
+        public void SetEvent()
+        {
+            AutoResetEvent.Set();
         }
 
         public bool WaitForEvent(TimeSpan timeout)
@@ -37,20 +54,18 @@ namespace Vereyon.Windows
             return WaitForEvent((int)timeout.TotalMilliseconds);
         }
 
-        public void SetEvent()
-        {
-            _autoResetEvent.Set();
-        }
-
+        /// <summary>
+        /// Waits for the event with the given timeout while still running the message loop.
+        /// </summary>
+        /// <param name="timeout"></param>
+        /// <returns></returns>
         public bool WaitForEvent(int timeout)
         {
 
             int waitInterval = 50;
-            if(_eventHandler != null)
-                _event.AddEventHandler(_eventContainer, _eventHandler);
 
             // Execute application events.
-            while (!_autoResetEvent.WaitOne(waitInterval))
+            while (!AutoResetEvent.WaitOne(waitInterval))
             {
                     Application.DoEvents();
                 timeout -= waitInterval;
@@ -58,15 +73,15 @@ namespace Vereyon.Windows
                 // Check if the time out expired. If so return false after cleaning up.
                 if (timeout <= 0)
                 {
-                    if (_eventHandler != null)
-                        _event.RemoveEventHandler(_eventContainer, _eventHandler);
+                    if (ListenEventHandler != null)
+                        ListenEvent.RemoveEventHandler(EventContainer, ListenEventHandler);
                     return false;
                 }
             }
 
             // Cleanup and return true.
-            if(_eventHandler != null)
-                _event.RemoveEventHandler(_eventContainer, _eventHandler);
+            if(ListenEventHandler != null)
+                ListenEvent.RemoveEventHandler(EventContainer, ListenEventHandler);
             return true;
         }
     }
