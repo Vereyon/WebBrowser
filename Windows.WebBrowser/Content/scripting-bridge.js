@@ -1,40 +1,66 @@
 ﻿function scriptingBridge(options) {
 
-    function invoke(method, options, json) {
+    function invoke(method, json) {
 
         var result;
         var args;
-        var namespace;
-        var context;
-        var func;
-        var jsonResult;
 
-        context = window;
-        namespace = method.split('.');
-        func = namespace.pop();
+		var result = {
+			success: true,
+			result: null,
+			error: null
+		};
+
+		// The root context is assumed to be the window object. The last part of the method parameter is the actual function name.
+        var context = window;
+        var namespace = method.split('.');
+        var func = namespace.pop();
 
         // Resolve the context
         for (var i = 0; i < namespace.length; i++) {
             context = context[namespace[i]];
+
+			// Check if the context is defined so far.
+			if(context == undefined)
+			{
+				return JSON.stringify({
+					success: false,
+					error: namespace.slice(0, i + 1).join('.') + ' is undefined.'
+				});
+			}
         }
+
+		// Check the target function.
+		if(context[func] == undefined)
+		{
+			return JSON.stringify({
+				success: false,
+				error: method + ' is undefined.'
+			})
+		}
+		if(typeof(context[func]) != 'function')
+		{
+			return JSON.stringify({
+				success: false,
+				error: method + ' is not a function.'
+			});
+		}
 
         // Prepare arguments and invoke target function.
-		if(json)
-			args = JSON.parse(json);
-		else
-			args = undefined;
+		args = JSON.parse(json);
         result = context[func].apply(this, args);
 
-        // Serialize and return result
-        if (options == 'json' && result) {
-            try {
-                jsonResult = JSON.stringify(result);
-            } catch (err) { }
-            if (!jsonResult)
-                jsonResult = result.toString();
-            return jsonResult;
-        }
-        return result;
+		// Serialize the result and wrap the function result in a result object.
+		// Do not directly serialize the complete result object as the user may use different
+		// serialization options.
+		jsonResult = JSON.stringify(result);
+		result = {
+			result: jsonResult,
+			success: true
+		};
+
+		// Serialize and return result object.
+		return JSON.stringify(result);
     }
 
     var callGateName;
@@ -49,7 +75,8 @@
     // Prepare registration configuration.
     var configuration = {
         callGatename: callGateName,
-        documentMode: window.document.documentMode
+        documentMode: window.document.documentMode,
+		jsonSupported: JSON && JSON.stringify && JSON.parse
     };
 
     // Register the call gate

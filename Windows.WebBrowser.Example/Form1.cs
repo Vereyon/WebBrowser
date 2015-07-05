@@ -38,7 +38,7 @@ namespace Vereyon.Windows
             var documentMode = webBrowser.Document.InvokeScript("getDocumentMode");
             documentModeLabel.Text = string.Format("Document mode: {0}", documentMode);
 
-            //MessageBox.Show(WinInetCacheControl.UrlCacheGroups().Count().ToString() + "\r\n" + WinInetCacheControl.UrlCacheEntries().Count().ToString());
+            MessageBox.Show(WinInetCacheControl.UrlCacheGroups().Count().ToString() + "\r\n" + WinInetCacheControl.UrlCacheEntries().Count().ToString());
         }
 
         private void button1_Click(object sender, EventArgs e)

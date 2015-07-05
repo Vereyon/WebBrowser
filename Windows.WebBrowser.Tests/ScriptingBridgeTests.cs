@@ -155,9 +155,35 @@ namespace Vereyon.Windows
                 form.WebBrowser.DocumentCompleted += (sender, args) =>
                 {
 
-                    var result = bridge.InvokeFunction<string>("undefinedFunction");
-                    Assert.Equal(null, result);
+                    Assert.Throws<Exception>(() => bridge.InvokeFunction<string>("undefinedFunction"));
 
+                    waiter.SetEvent();
+                };
+
+                form.Show();
+                form.WebBrowser.Url = new Uri(String.Format("file:///{0}/TestPage.html", Directory.GetCurrentDirectory()));
+
+                // Wait for the document to load.
+                Assert.True(waiter.WaitForEvent(2000));
+            }
+        }
+
+        /// <summary>
+        /// Tests calling an undefined context.
+        /// </summary>
+        [Fact]
+        public void TestUndefinedContextCall()
+        {
+
+            using (var form = new BrowserTestForm())
+            {
+
+                var bridge = new ScriptingBridge(form.WebBrowser, true);
+                var waiter = new WaitForFormsEvent();
+                form.WebBrowser.DocumentCompleted += (sender, args) =>
+                {
+
+                    Assert.Throws<Exception>(() => bridge.InvokeFunction<string>("undefinedContext.someFunc"));
                     waiter.SetEvent();
                 };
 

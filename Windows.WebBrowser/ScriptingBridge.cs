@@ -69,6 +69,11 @@ namespace Vereyon.Windows
         public bool Initialized { get; private set; }
 
         /// <summary>
+        /// Gets / sets wether script dependencies should be injected on initialization.
+        /// </summary>
+        public bool InjectScriptDependencies { get; set; }
+
+        /// <summary>
         /// Gets the WebBrowser document mode (also known as the IE version).
         /// </summary>
         [ComVisible(false)]
@@ -78,7 +83,7 @@ namespace Vereyon.Windows
         /// Constructs a new instanc of the WebBrowserBridge binding to the passed WebBrowser control.
         /// </summary>
         /// <param name="webBrowser"></param>
-        /// <param name="autoInitialize"></param>
+        /// <param name="autoInitialize">Controls if the scripting bridge is to be initialzed automatically.</param>
         public ScriptingBridge(WebBrowser webBrowser, bool autoInitialize)
         {
 
@@ -86,6 +91,7 @@ namespace Vereyon.Windows
             {
                 ContractResolver = new CamelCasePropertyNamesContractResolver()
             };
+            JsonSerializerSettings = new JsonSerializerSettings();
 
             WebBrowser = webBrowser;
             WebBrowser.ObjectForScripting = this;
@@ -101,6 +107,10 @@ namespace Vereyon.Windows
             Initialize();
         }
 
+        /// <summary>
+        /// Returns the scripting bridge souce code. Override to provide a custom implementation.
+        /// </summary>
+        /// <returns></returns>
         protected virtual string GetScriptingBridgeSource()
         {
 
@@ -117,6 +127,10 @@ namespace Vereyon.Windows
             }
         }
 
+        /// <summary>
+        /// Return the JSON polyfill source code. Override to provide a custom implemenation.
+        /// </summary>
+        /// <returns></returns>
         protected virtual string GetJsonSource()
         {
 
@@ -178,23 +192,28 @@ namespace Vereyon.Windows
             // Build parameter array.
             var parameters = new List<object>();
             parameters.Add(functionName);
-            parameters.Add("json");
             parameters.Add(json);
 
             // Invoke the browser side call gate.
             RequireInitialized();
             var resultJson = WebBrowser.Document.InvokeScript(ClientCallGate, parameters.ToArray());
 
-            // It is valid to return a null.
-            if (resultJson == null)
+            // Do basic inspection of the result and deserialize it.
+            if(resultJson == null)
+                throw new Exception("Did not receive any response from client side function invocation. Check if scripting is setup correctly.");
+            if (!(resultJson is string))
+                throw new Exception("Received unexpected response from client side.");
+            var result = JsonConvert.DeserializeObject<InvokeFunctionResult>((string)resultJson, InternalJsonSettings);
+
+            // Inspect the result.
+            if (!result.Success)
+                throw new Exception(result.Error);
+            if (string.IsNullOrEmpty(result.Result))
                 return default(T);
 
-            if (!(resultJson is string))
-                throw new Exception("Invalid result.");
-
-            var result = JsonConvert.DeserializeObject<T>((string)resultJson, JsonSerializerSettings);
-            
-            return result;
+            // Deserialize the function call result using the user provided serialization settings.
+            var clientResult = JsonConvert.DeserializeObject<T>(result.Result, JsonSerializerSettings);
+            return clientResult;
         }
 
         /// <summary>
@@ -223,6 +242,17 @@ namespace Vereyon.Windows
 
             public string CallGateName { get; set; }
             public string DocumentMode { get; set; }
+        }
+
+        private class InvokeFunctionResult
+        {
+            public bool Success { get; set; }
+            public string Error { get; set; }
+
+            /// <summary>
+            /// JSON string of function call result.
+            /// </summary>
+            public string Result { get; set; }
         }
     }
 }
