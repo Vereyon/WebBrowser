@@ -1,6 +1,6 @@
 ﻿namespace Vereyon.Windows
 {
-    partial class Form1
+    partial class ExampleForm
     {
         /// <summary>
         /// Required designer variable.
@@ -34,6 +34,9 @@
             this.versionLabel = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
+            this.scriptingButton = new System.Windows.Forms.Button();
+            this.button3 = new System.Windows.Forms.Button();
+            this.bridgeStatusLabel = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -49,14 +52,15 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.bridgeStatusLabel);
             this.groupBox1.Controls.Add(this.documentModeLabel);
             this.groupBox1.Controls.Add(this.versionLabel);
             this.groupBox1.Location = new System.Drawing.Point(575, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(223, 191);
+            this.groupBox1.Size = new System.Drawing.Size(223, 118);
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "groupBox1";
+            this.groupBox1.Text = "Status";
             // 
             // documentModeLabel
             // 
@@ -96,16 +100,47 @@
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
-            // Form1
+            // scriptingButton
+            // 
+            this.scriptingButton.Location = new System.Drawing.Point(602, 289);
+            this.scriptingButton.Name = "scriptingButton";
+            this.scriptingButton.Size = new System.Drawing.Size(75, 23);
+            this.scriptingButton.TabIndex = 4;
+            this.scriptingButton.Text = "Scripting Bridge";
+            this.scriptingButton.UseVisualStyleBackColor = true;
+            this.scriptingButton.Click += new System.EventHandler(this.scriptingButton_Click);
+            // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(602, 318);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(75, 23);
+            this.button3.TabIndex = 5;
+            this.button3.Text = "button3";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
+            // bridgeStatusLabel
+            // 
+            this.bridgeStatusLabel.AutoSize = true;
+            this.bridgeStatusLabel.Location = new System.Drawing.Point(6, 42);
+            this.bridgeStatusLabel.Name = "bridgeStatusLabel";
+            this.bridgeStatusLabel.Size = new System.Drawing.Size(83, 13);
+            this.bridgeStatusLabel.TabIndex = 2;
+            this.bridgeStatusLabel.Text = "Scripting bridge:";
+            // 
+            // ExampleForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(810, 491);
+            this.Controls.Add(this.button3);
+            this.Controls.Add(this.scriptingButton);
             this.Controls.Add(this.button2);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.webBrowser);
-            this.Name = "Form1";
+            this.Name = "ExampleForm";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.groupBox1.ResumeLayout(false);
@@ -122,6 +157,9 @@
         private System.Windows.Forms.Label documentModeLabel;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button scriptingButton;
+        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Label bridgeStatusLabel;
     }
 }
 

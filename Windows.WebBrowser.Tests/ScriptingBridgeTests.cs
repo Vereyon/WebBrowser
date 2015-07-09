@@ -43,7 +43,7 @@ namespace Vereyon.Windows
 
                     // Initialize the bridge and check if it worked.
                     bridge.Initialize();
-                    Assert.True(bridge.Initialized);
+                    Assert.True(bridge.IsInitialized);
 
                     waiter.SetEvent(); 
                 };
@@ -69,7 +69,7 @@ namespace Vereyon.Windows
                 {
 
                     // Check that the bridge is initialized.
-                    Assert.True(bridge.Initialized);
+                    Assert.True(bridge.IsInitialized);
 
                     waiter.SetEvent();
                 };

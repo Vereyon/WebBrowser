@@ -10,12 +10,12 @@ using System.Windows.Forms;
 
 namespace Vereyon.Windows
 {
-    public partial class Form1 : Form
+    public partial class ExampleForm : Form
     {
 
-        public ScriptingBridge Bridge;
+        public ScriptingBridge Bridge { get; private set; }
 
-        public Form1()
+        public ExampleForm()
         {
             InitializeComponent();
 
@@ -35,8 +35,7 @@ namespace Vereyon.Windows
         private void webBrowser_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
         {
 
-            var documentMode = webBrowser.Document.InvokeScript("getDocumentMode");
-            documentModeLabel.Text = string.Format("Document mode: {0}", documentMode);
+            documentModeLabel.Text = string.Format("Document mode: {0}", Bridge.DocumentMode);
 
             MessageBox.Show(WinInetCacheControl.UrlCacheGroups().Count().ToString() + "\r\n" + WinInetCacheControl.UrlCacheEntries().Count().ToString());
         }
@@ -53,5 +52,40 @@ namespace Vereyon.Windows
             WinInetCacheControl.ClearCache();
             MessageBox.Show(WinInetCacheControl.UrlCacheGroups().Count().ToString() + "\r\n" + WinInetCacheControl.UrlCacheEntries().Count().ToString());
         }
+
+        private void scriptingButton_Click(object sender, EventArgs e)
+        {
+
+            var parameter = new ScriptingParameterData
+            {
+                Message = "Test message"
+            };
+
+            var data = Bridge.InvokeFunction<ScriptingReturnData>("myObject.myFunction", parameter);
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+
+            var parameter = new ScriptingParameterData
+            {
+                Message = "Test message"
+            };
+
+            var data = webBrowser.Document.InvokeScript("myFunction", new object[] { parameter });
+        }
+    }
+
+    public class ScriptingParameterData
+    {
+        public string Message { get; set; }
+    }
+
+    public class ScriptingReturnData
+    {
+
+        public int Id { get; set; }
+        public DateTime Date { get; set; }
+        public string Title { get; set; }
     }
 }

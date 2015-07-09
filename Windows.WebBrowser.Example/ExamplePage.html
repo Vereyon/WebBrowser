@@ -6,9 +6,18 @@
 <body>
 <script type="text/javascript">
 
-function getDocumentMode()
-{
-	return document.documentMode;
+var myObject = {
+  myFunction: function(data)
+  {
+
+    alert(data.message);
+  
+    return {
+      id: 12356,
+      date: new Date(),
+      title: 'Some string'
+    };
+  }
 }
 
 </script>

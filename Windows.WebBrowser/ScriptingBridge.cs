@@ -66,7 +66,7 @@ namespace Vereyon.Windows
         /// Gets if the browser bridge is initialized.
         /// </summary>
         [ComVisible(false)]
-        public bool Initialized { get; private set; }
+        public bool IsInitialized { get; private set; }
 
         /// <summary>
         /// Gets / sets wether script dependencies should be injected on initialization.
@@ -80,6 +80,12 @@ namespace Vereyon.Windows
         public string DocumentMode { get; private set; }
 
         /// <summary>
+        /// Indicates if JSON is supported by the client (either natively or via a polyfill).
+        /// </summary>
+        [ComVisible(false)]
+        public bool JsonSupported { get; private set; }
+
+        /// <summary>
         /// Constructs a new instanc of the WebBrowserBridge binding to the passed WebBrowser control.
         /// </summary>
         /// <param name="webBrowser"></param>
@@ -91,7 +97,10 @@ namespace Vereyon.Windows
             {
                 ContractResolver = new CamelCasePropertyNamesContractResolver()
             };
-            JsonSerializerSettings = new JsonSerializerSettings();
+            JsonSerializerSettings = new JsonSerializerSettings
+            {
+                ContractResolver = new CamelCasePropertyNamesContractResolver()
+            };
 
             WebBrowser = webBrowser;
             WebBrowser.ObjectForScripting = this;
@@ -168,14 +177,12 @@ namespace Vereyon.Windows
         /// </summary>
         private void RequireInitialized()
         {
-            if (!Initialized)
+            if (!IsInitialized)
                 throw new InvalidOperationException("The browser bridge is not initialized.");
         }
 
         /// <summary>
-        /// Invokes the specified method in the hosted browser environment. Any arguments that are passed are serialized to JSON
-        /// prior in order to transfer them to the browser environment. Objects can thus be passed and need not be marked as COM visible.
-        /// Conversely, member functions of passed objects are unavailable in the hosted browser.
+        /// Invokes the specified function in the hosted browser environment returning the specified return type.
         /// </summary>
         /// <typeparam name="T">Expected return type.</typeparam>
         /// <param name="functionName">Name of function to call. In the format of object.property.memberFunction(). The call context will by default equal object.property part.</param>
@@ -183,6 +190,38 @@ namespace Vereyon.Windows
         /// <returns></returns>
         [ComVisible(false)]
         public T InvokeFunction<T>(string functionName, params object[] args)
+        {
+
+            // Invoke the function.
+            var result = InvokeFunctionInternal(functionName, args);
+            if (string.IsNullOrEmpty(result.Result))
+                return default(T);
+
+            // Deserialize the function call result using the user provided serialization settings.
+            var clientResult = JsonConvert.DeserializeObject<T>(result.Result, JsonSerializerSettings);
+            return clientResult;
+        }
+
+        /// <summary>
+        /// Invokes the specified function in the hosted browser environment without returning any data.
+        /// </summary>
+        /// <param name="functionName"></param>
+        /// <param name="args"></param>
+        public void InvokeFunction(string functionName, params object[] args)
+        {
+
+            // Invoke the function.
+            var result = InvokeFunctionInternal(functionName, args);
+        }
+
+        /// <summary>
+        /// Internal implementation of code invoking the client side function while remaining agnostic about the returned
+        /// data.
+        /// </summary>
+        /// <param name="functionName"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        protected InvokeFunctionResult InvokeFunctionInternal(string functionName, params object[] args)
         {
 
             // Serialize function parameters as JSON bacause we aren't able to pass objects
@@ -199,7 +238,7 @@ namespace Vereyon.Windows
             var resultJson = WebBrowser.Document.InvokeScript(ClientCallGate, parameters.ToArray());
 
             // Do basic inspection of the result and deserialize it.
-            if(resultJson == null)
+            if (resultJson == null)
                 throw new Exception("Did not receive any response from client side function invocation. Check if scripting is setup correctly.");
             if (!(resultJson is string))
                 throw new Exception("Received unexpected response from client side.");
@@ -208,12 +247,8 @@ namespace Vereyon.Windows
             // Inspect the result.
             if (!result.Success)
                 throw new Exception(result.Error);
-            if (string.IsNullOrEmpty(result.Result))
-                return default(T);
 
-            // Deserialize the function call result using the user provided serialization settings.
-            var clientResult = JsonConvert.DeserializeObject<T>(result.Result, JsonSerializerSettings);
-            return clientResult;
+            return result;
         }
 
         /// <summary>
@@ -229,10 +264,15 @@ namespace Vereyon.Windows
             var configuration = JsonConvert.DeserializeObject<ScriptingBridgeRegistrationConfiguration>(args, InternalJsonSettings);
 
             ClientCallGate = configuration.CallGateName;
-            DocumentMode = DocumentMode;
+            DocumentMode = configuration.DocumentMode;
+            JsonSupported = configuration.JsonSupported;
 
             // Set the initialized flag.
-            Initialized = true;
+            IsInitialized = true;
+
+            // Invoke the initialized event.
+            if (Initialized != null)
+                Initialized.Invoke(this, EventArgs.Empty);
 
             return true;
         }
@@ -242,9 +282,10 @@ namespace Vereyon.Windows
 
             public string CallGateName { get; set; }
             public string DocumentMode { get; set; }
+            public bool JsonSupported { get; set; }
         }
 
-        private class InvokeFunctionResult
+        protected class InvokeFunctionResult
         {
             public bool Success { get; set; }
             public string Error { get; set; }
@@ -254,5 +295,10 @@ namespace Vereyon.Windows
             /// </summary>
             public string Result { get; set; }
         }
+
+        /// <summary>
+        /// Invoked when the scripting bridge has been initialized.
+        /// </summary>
+        public event EventHandler Initialized;
     }
 }
