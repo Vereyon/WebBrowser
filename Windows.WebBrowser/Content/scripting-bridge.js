@@ -48,7 +48,7 @@
 
         // Prepare arguments and invoke target function.
 		args = JSON.parse(json);
-        result = context[func].apply(this, args);
+        result = context[func](args);
 
 		// Serialize the result and wrap the function result in a result object.
 		// Do not directly serialize the complete result object as the user may use different
