@@ -3,6 +3,14 @@
 
 Vereyon's Windows.WebBrowser is a helper library for controlling and enhancing the System.Windows.Forms.WebBrowser control.
 
+Documentation
+-------------
+
+Unit tests
+----------
+
+See the Windows.WebBrowser.Tests for xUnit based unit tests.
+
 
 More information
 ----------------

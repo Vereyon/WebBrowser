@@ -20,37 +20,36 @@ namespace Vereyon.Windows
             InitializeComponent();
 
             Bridge = new ScriptingBridge(webBrowser, true);
+            Bridge.Initialized += new EventHandler(Bridge_Initialized);
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        void Bridge_Initialized(object sender, EventArgs e)
+        {
+            documentModeLabel.Text = string.Format("Document mode: {0}", Bridge.DocumentMode);
+            jsonSupportLabel.Text = string.Format("JSON supported: {0}", Bridge.JsonSupported);
+            bridgeStatusLabel.Text = string.Format("Scripting bridge initialized: {0}", Bridge.IsInitialized);
+        }
+
+        private void ExampleForm_Load(object sender, EventArgs e)
         {
 
             versionLabel.Text = string.Format("Version: {0}", webBrowser.Version);
 
             // Load the example page.
             webBrowser.Url = new Uri(String.Format("file:///{0}/ExamplePage.html", Directory.GetCurrentDirectory()));
-            
         }
 
-        private void webBrowser_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
-        {
-
-            documentModeLabel.Text = string.Format("Document mode: {0}", Bridge.DocumentMode);
-
-            MessageBox.Show(WinInetCacheControl.UrlCacheGroups().Count().ToString() + "\r\n" + WinInetCacheControl.UrlCacheEntries().Count().ToString());
-        }
-
-        private void button1_Click(object sender, EventArgs e)
+        private void reloadPageButton_Click(object sender, EventArgs e)
         {
 
             webBrowser.Url = new Uri(String.Format("file:///{0}/ExamplePage.html", Directory.GetCurrentDirectory()));
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void clearCacheButton_Click(object sender, EventArgs e)
         {
 
             WinInetCacheControl.ClearCache();
-            MessageBox.Show(WinInetCacheControl.UrlCacheGroups().Count().ToString() + "\r\n" + WinInetCacheControl.UrlCacheEntries().Count().ToString());
+            MessageBox.Show("Cleared WinInet cache.");
         }
 
         private void scriptingButton_Click(object sender, EventArgs e)
@@ -62,17 +61,6 @@ namespace Vereyon.Windows
             };
 
             var data = Bridge.InvokeFunction<ScriptingReturnData>("myObject.myFunction", parameter);
-        }
-
-        private void button3_Click(object sender, EventArgs e)
-        {
-
-            var parameter = new ScriptingParameterData
-            {
-                Message = "Test message"
-            };
-
-            var data = webBrowser.Document.InvokeScript("myFunction", new object[] { parameter });
         }
     }
 

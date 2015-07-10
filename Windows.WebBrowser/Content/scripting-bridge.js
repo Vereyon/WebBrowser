@@ -48,7 +48,7 @@
 
         // Prepare arguments and invoke target function.
 		args = JSON.parse(json);
-        result = context[func](args);
+        result = context[func].apply(context, args);
 
 		// Serialize the result and wrap the function result in a result object.
 		// Do not directly serialize the complete result object as the user may use different
@@ -76,7 +76,7 @@
     var configuration = {
         callGatename: callGateName,
         documentMode: window.document.documentMode,
-		jsonSupported: JSON && JSON.stringify && JSON.parse
+		jsonSupported: (JSON != undefined && JSON.stringify != undefined && JSON.parse != undefined)
     };
 
     // Register the call gate

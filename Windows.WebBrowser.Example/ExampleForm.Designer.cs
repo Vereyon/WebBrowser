@@ -30,28 +30,34 @@
         {
             this.webBrowser = new System.Windows.Forms.WebBrowser();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.jsonSupportLabel = new System.Windows.Forms.Label();
+            this.bridgeStatusLabel = new System.Windows.Forms.Label();
             this.documentModeLabel = new System.Windows.Forms.Label();
             this.versionLabel = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
+            this.reloadPageButton = new System.Windows.Forms.Button();
+            this.clearCacheButton = new System.Windows.Forms.Button();
             this.scriptingButton = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
-            this.bridgeStatusLabel = new System.Windows.Forms.Label();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.groupBox1.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.SuspendLayout();
             // 
             // webBrowser
             // 
+            this.webBrowser.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.webBrowser.Location = new System.Drawing.Point(12, 12);
             this.webBrowser.MinimumSize = new System.Drawing.Size(20, 20);
             this.webBrowser.Name = "webBrowser";
             this.webBrowser.Size = new System.Drawing.Size(557, 467);
             this.webBrowser.TabIndex = 0;
             this.webBrowser.Url = new System.Uri("http://ExamplePage.html", System.UriKind.Absolute);
-            this.webBrowser.DocumentCompleted += new System.Windows.Forms.WebBrowserDocumentCompletedEventHandler(this.webBrowser_DocumentCompleted);
             // 
             // groupBox1
             // 
+            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Controls.Add(this.jsonSupportLabel);
             this.groupBox1.Controls.Add(this.bridgeStatusLabel);
             this.groupBox1.Controls.Add(this.documentModeLabel);
             this.groupBox1.Controls.Add(this.versionLabel);
@@ -61,6 +67,24 @@
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Status";
+            // 
+            // jsonSupportLabel
+            // 
+            this.jsonSupportLabel.AutoSize = true;
+            this.jsonSupportLabel.Location = new System.Drawing.Point(6, 42);
+            this.jsonSupportLabel.Name = "jsonSupportLabel";
+            this.jsonSupportLabel.Size = new System.Drawing.Size(88, 13);
+            this.jsonSupportLabel.TabIndex = 3;
+            this.jsonSupportLabel.Text = "JSON supported:";
+            // 
+            // bridgeStatusLabel
+            // 
+            this.bridgeStatusLabel.AutoSize = true;
+            this.bridgeStatusLabel.Location = new System.Drawing.Point(6, 55);
+            this.bridgeStatusLabel.Name = "bridgeStatusLabel";
+            this.bridgeStatusLabel.Size = new System.Drawing.Size(83, 13);
+            this.bridgeStatusLabel.TabIndex = 2;
+            this.bridgeStatusLabel.Text = "Scripting bridge:";
             // 
             // documentModeLabel
             // 
@@ -80,71 +104,63 @@
             this.versionLabel.TabIndex = 0;
             this.versionLabel.Text = "Version: ";
             // 
-            // button1
+            // reloadPageButton
             // 
-            this.button1.Location = new System.Drawing.Point(602, 231);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 2;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.reloadPageButton.Location = new System.Drawing.Point(6, 19);
+            this.reloadPageButton.Name = "reloadPageButton";
+            this.reloadPageButton.Size = new System.Drawing.Size(211, 23);
+            this.reloadPageButton.TabIndex = 2;
+            this.reloadPageButton.Text = "Reload page";
+            this.reloadPageButton.UseVisualStyleBackColor = true;
+            this.reloadPageButton.Click += new System.EventHandler(this.reloadPageButton_Click);
             // 
-            // button2
+            // clearCacheButton
             // 
-            this.button2.Location = new System.Drawing.Point(602, 260);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
-            this.button2.TabIndex = 3;
-            this.button2.Text = "button2";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.clearCacheButton.Location = new System.Drawing.Point(6, 48);
+            this.clearCacheButton.Name = "clearCacheButton";
+            this.clearCacheButton.Size = new System.Drawing.Size(211, 23);
+            this.clearCacheButton.TabIndex = 3;
+            this.clearCacheButton.Text = "Clean cache";
+            this.clearCacheButton.UseVisualStyleBackColor = true;
+            this.clearCacheButton.Click += new System.EventHandler(this.clearCacheButton_Click);
             // 
             // scriptingButton
             // 
-            this.scriptingButton.Location = new System.Drawing.Point(602, 289);
+            this.scriptingButton.Location = new System.Drawing.Point(6, 77);
             this.scriptingButton.Name = "scriptingButton";
-            this.scriptingButton.Size = new System.Drawing.Size(75, 23);
+            this.scriptingButton.Size = new System.Drawing.Size(211, 23);
             this.scriptingButton.TabIndex = 4;
             this.scriptingButton.Text = "Scripting Bridge";
             this.scriptingButton.UseVisualStyleBackColor = true;
             this.scriptingButton.Click += new System.EventHandler(this.scriptingButton_Click);
             // 
-            // button3
+            // groupBox2
             // 
-            this.button3.Location = new System.Drawing.Point(602, 318);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(75, 23);
-            this.button3.TabIndex = 5;
-            this.button3.Text = "button3";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
-            // 
-            // bridgeStatusLabel
-            // 
-            this.bridgeStatusLabel.AutoSize = true;
-            this.bridgeStatusLabel.Location = new System.Drawing.Point(6, 42);
-            this.bridgeStatusLabel.Name = "bridgeStatusLabel";
-            this.bridgeStatusLabel.Size = new System.Drawing.Size(83, 13);
-            this.bridgeStatusLabel.TabIndex = 2;
-            this.bridgeStatusLabel.Text = "Scripting bridge:";
+            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox2.Controls.Add(this.reloadPageButton);
+            this.groupBox2.Controls.Add(this.scriptingButton);
+            this.groupBox2.Controls.Add(this.clearCacheButton);
+            this.groupBox2.Location = new System.Drawing.Point(575, 136);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(223, 112);
+            this.groupBox2.TabIndex = 5;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Control";
             // 
             // ExampleForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(810, 491);
-            this.Controls.Add(this.button3);
-            this.Controls.Add(this.scriptingButton);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.webBrowser);
             this.Name = "ExampleForm";
-            this.Text = "Form1";
-            this.Load += new System.EventHandler(this.Form1_Load);
+            this.Text = "Example";
+            this.Load += new System.EventHandler(this.ExampleForm_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -155,11 +171,12 @@
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Label versionLabel;
         private System.Windows.Forms.Label documentModeLabel;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button reloadPageButton;
+        private System.Windows.Forms.Button clearCacheButton;
         private System.Windows.Forms.Button scriptingButton;
-        private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Label bridgeStatusLabel;
+        private System.Windows.Forms.Label jsonSupportLabel;
+        private System.Windows.Forms.GroupBox groupBox2;
     }
 }
 
