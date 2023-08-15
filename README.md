@@ -1,15 +1,36 @@
 ﻿WebBrowser Tools
 =================
 
-Vereyon's Windows.WebBrowser is a helper library for controlling and enhancing the System.Windows.Forms.WebBrowser control.
+Vereyon's Windows.WebBrowser is a helper library for controlling and enhancing the `System.Windows.Forms.WebBrowser` control which embeds Microsoft Internet Explorer.
 
 Documentation
 -------------
 
+### Scripting Bridge
+
+The `ScriptingBridge` is a utility which makes it possible to invoke JavaScript member functions in the embedded browser and to receive return values and objects. This is in contrast to the `HtmlDocument.InvokeScript()` method which can only invoke global functions.
+
+```
+var bridge = new ScriptingBridge(webBrowser, true);
+var result = Bridge.InvokeFunction<ScriptingReturnData>("myObject.myFunction", parameter);
+```
+
+### Internet Feature Control
+
+The `InternetFeatureControl` is a utility class which can be used to control features of the `System.Windows.Forms.WebBrowser` control.
+
+#### Browser emulation
+
+Using `InternetFeatureControl.SetBrowserEmulation()` the Internet Explorer rendering engine version can be controlled.
+
+#### GPU acceleration
+
+Using `InternetFeatureControl.SetGpuRendering()` GPU acceleration for rendering can be enabled and disabled.
+
 Unit tests
 ----------
 
-See the Windows.WebBrowser.Tests for xUnit based unit tests.
+See the Windows.WebBrowser.Tests project for xUnit based unit tests.
 
 
 More information
