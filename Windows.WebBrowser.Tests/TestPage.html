@@ -3,28 +3,27 @@
 <body>
 <script type="text/javascript">
 
-  function globalFunction()
-  {
-    return "globalFunction";
-  }
+    function globalFunction()
+    {
+        return "globalFunction";
+    }
   
-  function voidReturnFunction()
-  {
-  }
+    function voidReturnFunction()
+    {
+    }
 
-  var anObject = {};
-  anObject.memberFunction = function()
-  {
-    return "memberFunction";
-  }
-  
-  /*
-   * Simple member function for testing if arguments are correctly passed. Returns passed argument.
-   */
-  anObject.simpleArgumentFunction = function(arg)
-  {
-    return arg;
-  }
+    var anObject = {
+        memberFunction: function () {
+            return "memberFunction";
+        },
+
+        /*
+        * Simple member function for testing if arguments are correctly passed. Returns passed argument.
+        */
+        simpleArgumentFunction: function (arg) {
+            return arg;
+        }
+    };
 
 </script>
 

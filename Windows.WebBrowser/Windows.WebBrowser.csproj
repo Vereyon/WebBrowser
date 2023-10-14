@@ -3,6 +3,13 @@
     <TargetFramework>net4</TargetFramework>
     <RootNamespace>Vereyon.Windows</RootNamespace>
     <AssemblyName>Vereyon.$(MSBuildProjectName)</AssemblyName>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Authors>Christ Akkermans</Authors>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageProjectUrl>https://github.com/Vereyon/WebBrowser</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Vereyon/WebBrowser</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Description>Vereyon.Windows.WebBrowser is a helper library for controlling and enhancing the System.Windows.Forms.WebBrowser control. It improves JavaScript interoperability and enables controlling the IE version and GPU acceleration.</Description>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System.Windows.Forms" />
@@ -12,6 +19,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Content\json.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json">
