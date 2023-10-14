@@ -12,7 +12,7 @@ namespace Vereyon.Windows
     public class ScriptingBridgeTests
     {
 
-        [Fact]
+        [StaFact]
         public void TestBrowserTestForm()
         {
 
@@ -30,7 +30,7 @@ namespace Vereyon.Windows
             }
         }
 
-        [Fact]
+        [StaFact]
         public void TestInitialization()
         {
 
@@ -56,7 +56,7 @@ namespace Vereyon.Windows
             }
         }
 
-        [Fact]
+        [StaFact]
         public void TestAutoInitialization()
         {
 
@@ -85,7 +85,7 @@ namespace Vereyon.Windows
         /// <summary>
         /// Tests calling a global function.
         /// </summary>
-        [Fact]
+        [StaFact]
         public void TestGlobalFunctionCall()
         {
 
@@ -114,7 +114,7 @@ namespace Vereyon.Windows
         /// <summary>
         /// Tests calling a function returning void.
         /// </summary>
-        [Fact]
+        [StaFact]
         public void TestVoidFunctionCall()
         {
 
@@ -127,7 +127,7 @@ namespace Vereyon.Windows
                 {
 
                     var result = bridge.InvokeFunction<string>("voidReturnFunction");
-                    Assert.Equal(null, result);
+                    Assert.Null(result);
 
                     waiter.SetEvent();
                 };
@@ -143,7 +143,7 @@ namespace Vereyon.Windows
         /// <summary>
         /// Tests calling an undefined function.
         /// </summary>
-        [Fact]
+        [StaFact]
         public void TestUndefinedFunctionCall()
         {
 
@@ -171,7 +171,7 @@ namespace Vereyon.Windows
         /// <summary>
         /// Tests calling an undefined context.
         /// </summary>
-        [Fact]
+        [StaFact]
         public void TestUndefinedContextCall()
         {
 
@@ -198,7 +198,7 @@ namespace Vereyon.Windows
         /// <summary>
         /// Tests calling a member function.
         /// </summary>
-        [Fact]
+        [StaFact]
         public void TestMemberFunctionCall()
         {
 
@@ -227,7 +227,7 @@ namespace Vereyon.Windows
         /// <summary>
         /// Tests calling a member function with a simple parameter.
         /// </summary>
-        [Fact]
+        [StaFact]
         public void TestSimpleFunctionArgument()
         {
 
@@ -256,7 +256,7 @@ namespace Vereyon.Windows
         /// <summary>
         /// Tests calling a member function with a array parameter.
         /// </summary>
-        [Fact]
+        [StaFact]
         public void TestSimpleFunctionArrayArgument()
         {
 
@@ -298,7 +298,7 @@ namespace Vereyon.Windows
         /// <summary>
         /// Tests calling a member function with an object parameter.
         /// </summary>
-        [Fact]
+        [StaFact]
         public void TestSimpleFunctionObjectArgument()
         {
 
@@ -329,7 +329,7 @@ namespace Vereyon.Windows
         /// <summary>
         /// Tests passing a large array of objects to and from a javascript function.
         /// </summary>
-        [Fact]
+        [StaFact]
         public void TestSimpleLargeObjectArrayArgument()
         {
 
