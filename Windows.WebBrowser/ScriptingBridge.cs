@@ -229,9 +229,11 @@ namespace Vereyon.Windows
             var json = JsonConvert.SerializeObject(args, JsonSerializerSettings);
 
             // Build parameter array.
-            var parameters = new List<object>();
-            parameters.Add(functionName);
-            parameters.Add(json);
+            var parameters = new List<object>
+            {
+                functionName,
+                json
+            };
 
             // Invoke the browser side call gate.
             RequireInitialized();
@@ -246,7 +248,7 @@ namespace Vereyon.Windows
 
             // Inspect the result.
             if (!result.Success)
-                throw new Exception(result.Error);
+                throw new Exception($"An error occurred while invoking the client side function: {result.Error}");
 
             return result;
         }
