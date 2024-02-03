@@ -57,10 +57,27 @@ namespace Vereyon.Windows
 
             var parameter = new ScriptingParameterData
             {
-                Message = "Test message"
+                Message = "Test message from .NET"
             };
 
             var data = Bridge.InvokeFunction<ScriptingReturnData>("myObject.myFunction", parameter);
+
+            MessageBox.Show($"Data returned by the script on web page:\r\n" +
+                $"id: {data.Id}\r\n" +
+                $"date: {data.Date}\r\n" +
+                $"title: {data.Title}");
+        }
+
+        private void errorScriptingButton_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Bridge.InvokeFunction<ScriptingReturnData>("noneExistingFunction");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"It's not a real stack trace, but at least you now know what happened:\r\n\r\n{ex}");
+            }
         }
     }
 
